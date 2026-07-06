@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Service Request Bot Demo</title>
+  <style>
+    :root { --bg:#f2f5f1; --ink:#1f2a24; --muted:#718076; --card:#ffffff; --line:#dce5dc; --accent:#316b55; --yellow:#f5c96b; --blue:#6b91c9; }
+    * { box-sizing:border-box; }
+    body { margin:0; font-family: Georgia, "Times New Roman", serif; color:var(--ink); background: linear-gradient(120deg,#f8fbf7,var(--bg)); }
+    .wrap { max-width:1180px; margin:0 auto; padding:38px 20px 60px; }
+    .hero { display:grid; grid-template-columns:.9fr 1.1fr; gap:24px; align-items:center; }
+    h1 { font-size:clamp(38px,5vw,70px); line-height:.95; margin:10px 0 18px; }
+    .lead { color:var(--muted); font-size:20px; line-height:1.55; }
+    .pill { display:inline-block; padding:9px 13px; border-radius:999px; background:#e7efe7; color:var(--accent); font-weight:700; }
+    .app { background:var(--card); border:1px solid var(--line); border-radius:30px; box-shadow:0 24px 80px rgba(31,42,36,.14); overflow:hidden; }
+    .tabs { display:flex; background:#eaf0ea; padding:8px; gap:8px; }
+    .tabs button { flex:1; border:0; border-radius:16px; padding:12px; cursor:pointer; background:transparent; font-weight:800; color:var(--muted); }
+    .tabs button.active { background:var(--card); color:var(--ink); }
+    .panel { display:none; padding:22px; }
+    .panel.active { display:block; }
+    label { display:block; color:var(--muted); margin:13px 0 5px; }
+    input, textarea, select { width:100%; padding:13px 14px; border:1px solid var(--line); border-radius:14px; font:inherit; }
+    textarea { min-height:96px; }
+    .btn { border:0; border-radius:15px; padding:13px 16px; margin-top:14px; cursor:pointer; background:var(--accent); color:white; font-weight:900; }
+    .list { display:grid; gap:12px; margin-top:14px; }
+    .ticket { border:1px solid var(--line); border-radius:18px; padding:15px; background:#fbfdfb; }
+    .ticket-top { display:flex; justify-content:space-between; gap:12px; align-items:center; }
+    .status { border-radius:999px; padding:6px 10px; font-size:13px; font-weight:900; background:var(--yellow); }
+    .status.work { background:var(--blue); color:white; }
+    .status.done { background:var(--accent); color:white; }
+    .features { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; margin-top:28px; }
+    .feature { padding:20px; border-radius:22px; border:1px solid var(--line); background:rgba(255,255,255,.72); }
+    @media(max-width:900px){ .hero,.features{grid-template-columns:1fr;} }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="hero">
+      <div>
+        <span class="pill">Заявки + статусы + уведомления</span>
+        <h1>Бот заявок, чтобы клиент не терялся в переписке</h1>
+        <p class="lead">Демо для малого бизнеса: клиент оставляет заявку в Telegram, админ получает карточку, меняет статус и видит историю обращений.</p>
+      </div>
+      <div class="app">
+        <div class="tabs">
+          <button class="active" onclick="tab(0)">Клиент</button>
+          <button onclick="tab(1)">Админка</button>
+          <button onclick="tab(2)">Аналитика</button>
+        </div>
+        <section class="panel active">
+          <h2>Оставить заявку</h2>
+          <label>Имя</label><input value="Алексей">
+          <label>Телефон</label><input value="+7 900 555-12-12">
+          <label>Тип услуги</label><select><option>Ремонт сайта</option><option>Настройка бота</option><option>Интеграция CRM</option></select>
+          <label>Описание</label><textarea>Нужно подключить форму на сайте и отправку заявок в Telegram.</textarea>
+          <button class="btn" onclick="addTicket()">Отправить заявку</button>
+        </section>
+        <section class="panel">
+          <h2>Заявки администратора</h2>
+          <div class="list" id="tickets"></div>
+        </section>
+        <section class="panel">
+          <h2>Сегодня</h2>
+          <div class="features">
+            <div class="feature"><b>12</b><br>новых заявок</div>
+            <div class="feature"><b>7</b><br>в работе</div>
+            <div class="feature"><b>5</b><br>закрыто</div>
+          </div>
+          <p class="lead">В реальном проекте здесь можно показать источники заявок, конверсию и скорость ответа.</p>
+        </section>
+      </div>
+    </section>
+    <section class="features">
+      <div class="feature"><h3>Для услуг</h3><p>Ремонт, клиники, салоны, студии, доставка, консультации.</p></div>
+      <div class="feature"><h3>Для админа</h3><p>Статусы, комментарии, ответственные, уведомления.</p></div>
+      <div class="feature"><h3>Для продажи</h3><p>Клиент сразу понимает: меньше хаоса, быстрее обработка.</p></div>
+    </section>
+  </main>
+  <script>
+    const panels = [...document.querySelectorAll(".panel")];
+    const buttons = [...document.querySelectorAll(".tabs button")];
+    const data = [
+      ["#1042", "Ремонт сайта", "Новая"],
+      ["#1041", "Настройка Telegram-бота", "В работе"],
+      ["#1040", "Интеграция CRM", "Закрыто"]
+    ];
+    function tab(i){ panels.forEach((p,x)=>p.classList.toggle("active",x===i)); buttons.forEach((b,x)=>b.classList.toggle("active",x===i)); render(); }
+    function addTicket(){ data.unshift(["#1043","Форма сайта → Telegram","Новая"]); tab(1); }
+    function render(){
+      document.getElementById("tickets").innerHTML = data.map(t => {
+        const cls = t[2] === "В работе" ? "work" : t[2] === "Закрыто" ? "done" : "";
+        return `<div class="ticket"><div class="ticket-top"><strong>${t[0]} · ${t[1]}</strong><span class="status ${cls}">${t[2]}</span></div><p>Клиент: Алексей · +7 900 555-12-12</p></div>`;
+      }).join("");
+    }
+    render();
+  </script>
+</body>
+</html>
