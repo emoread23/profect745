@@ -4,8 +4,8 @@
 
 ## Живое демо
 
-- GitHub Pages: https://emoread23.github.io/profect745/
-- Быстрый просмотр: https://raw.githack.com/emoread23/profect745/main/index.html
+- Открыть демо: https://htmlpreview.github.io/?https://github.com/emoread23/profect745/blob/main/index.html
+- GitHub Pages после включения в настройках: https://emoread23.github.io/profect745/
 
 ## Что показывает демо
 
